@@ -13,8 +13,16 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        Menu.cpp
+        Menu.cpp \
+    GrafoForm.cpp \
+    OrdenamientoForm.cpp
 
-HEADERS  += Menu.h
+HEADERS  += Menu.h \
+    GrafoForm.h \
+    OrdenamientoForm.h \
+    Nodo.h \
+    Grafo.h
 
-FORMS    += Menu.ui
+FORMS    += Menu.ui \
+    GrafoForm.ui \
+    OrdenamientoForm.ui
