@@ -18,3 +18,9 @@ void Menu::on_pushButton_clicked()
     GrafoForm* ventana = new GrafoForm();
     ventana->show();
 }
+
+void Menu::on_pushButton_2_clicked()
+{
+    OrdenamientoForm* ventana = new OrdenamientoForm();
+    ventana->show();
+}

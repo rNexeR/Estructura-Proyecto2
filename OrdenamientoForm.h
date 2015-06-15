@@ -2,6 +2,8 @@
 #define ORDENAMIENTOFORM_H
 
 #include <QWidget>
+#include <iostream>
+using namespace std;
 
 namespace Ui {
 class OrdenamientoForm;
@@ -17,14 +19,16 @@ public:
     int valores[1000];
 
 public slots:
-    void Randomizar();
-    void Limpiar();
-    void Ordenar();
-    int binSort(int valores[1000]);
-    int mergeSort(int valores[1000]);
-    int quickSort(int valores[1000]);
-    int heapSort(int valores[1000]);
-    int burbujaSort(int valores[1000]);
+    int* binSort(int valores[1000]);
+    int* mergeSort(int valores[1000]);
+    int* quickSort(int valores[1000]);
+    int* heapSort(int valores[1000]);
+    int* burbujaSort(int valores[1000]);
+
+private slots:
+    void on_bubble_clicked();
+
+    void on_random_clicked();
 
 private:
     Ui::OrdenamientoForm *ui;
