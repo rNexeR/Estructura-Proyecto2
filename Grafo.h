@@ -7,20 +7,29 @@ public:
     vector<Nodo*> vertices;
     void insertar(Nodo* nuevo)
     {
-        if(buscar(nuevo->valor) == NULL)
+        if(buscarPos(nuevo->valor) == -1)
             vertices.push_back(nuevo);
     }
 
-    void crearArista(Nodo* origen, Nodo* destino, char arista)
+    void crearArista(Nodo* origen, Nodo* destino, int arista)
     {
         if(!origen->buscarArista(destino))
         {
-            origen->aristas.insert(pair<Nodo*, char>(destino, arista));
-            destino->aristas.insert(pair<Nodo*, char>(origen, arista));
+            origen->aristas.insert(pair<Nodo*, int>(destino, arista));
+            destino->aristas.insert(pair<Nodo*, int>(origen, arista));
         }
     }
 
-    int buscar(string val)
+    Nodo* buscarNodo(string val){
+        for(int x = 0; x < vertices.size(); x++)
+        {
+            if(vertices[x]->valor == val)
+                return vertices[x];
+        }
+        return NULL;
+    }
+
+    int buscarPos(string val)
     {
         for(int x = 0; x < vertices.size(); x++)
         {
@@ -32,11 +41,11 @@ public:
 
     void eliminar(Nodo* nodo)
     {
-        int res = buscar(nodo->valor);
+        int res = buscarPos(nodo->valor);
 
         if(res >= 0)
         {
-            for(multimap<Nodo*, char>::iterator x = vertices[res]->aristas.begin();//initial value
+            for(multimap<Nodo*, int>::iterator x = vertices[res]->aristas.begin();//initial value
                     x != vertices[res]->aristas.end(); //limit
                     x++)
             {
@@ -49,13 +58,22 @@ public:
 
     void eliminarArista(Nodo* origen, Nodo* destino)
     {
-        multimap<Nodo*, char>::iterator* temp = origen->buscarArista(destino);
+        multimap<Nodo*, int>::iterator* temp = origen->buscarArista(destino);
 
         if(temp)
         {
-            multimap<Nodo*, char>::iterator* tempo = destino->buscarArista(origen);
+            multimap<Nodo*, int>::iterator* tempo = destino->buscarArista(origen);
             origen->aristas.erase(*temp);
             destino->aristas.erase(*tempo);
+        }
+    }
+
+    void imprimirVectores(){
+        for(int x = 0; x < vertices.size(); x++){
+            cout<<vertices[x]->valor<<endl;
+            for(multimap<Nodo*, int>::iterator i = vertices[x]->aristas.begin(); i != vertices[x]->aristas.end(); i++){
+                cout<<"\t"<<(*i).first->valor<<" , "<<(*i).second<<endl;
+            }
         }
     }
 
