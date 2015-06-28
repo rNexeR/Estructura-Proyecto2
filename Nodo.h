@@ -14,7 +14,7 @@ class Nodo{
 public:
     string valor;
     multimap<Nodo*, int> aristas;
-    int x, y;
+    QPointF pos;
 
     Nodo(string val){
         this->valor = val;

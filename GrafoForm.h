@@ -4,6 +4,8 @@
 
 #include <QWidget>
 #include <QMessageBox>
+#include <QGraphicsObject>
+#include <QTimer>
 
 namespace Ui {
 class GrafoForm;
@@ -17,6 +19,10 @@ public:
     explicit GrafoForm(QWidget *parent = 0);
     ~GrafoForm();
 
+public slots:
+    void stick();
+    void closeEvent (QCloseEvent *event);
+
 private slots:
     void on_zoomIn_clicked();
 
@@ -27,18 +33,34 @@ private slots:
     void getRandomPos(int &x, int &y);
 
     void fillCombos();
+    void fillPainter(char tipo);
+    void initPainter();
+    bool readyToCreate();
+    void updateAristas(int pos);
+    void updateAristasToNodo(int pos, int destino);
+    void eliminarArista(Nodo* origen, Nodo* destino);
+
     void on_crearArista_clicked();
 
     void on_eliminarVertice_clicked();
+
+    void on_eliminarArista_clicked();
 
 private:
     Ui::GrafoForm *ui;
 
     Grafo grafo;
     QMessageBox msg;
+    QTimer *timer;
 
     //GraphicView
     double currentScale, scaleMin, scaleFactor;
+    QGraphicsItemGroup* rectangle;
+    QGraphicsScene *sceneOriginal, *sceneKruskal, *scenePrim;
+    vector<QGraphicsItemGroup*> vertices;
+    vector< map<Nodo*, QGraphicsItemGroup*> > aristas;
+    int sizeEllipse;
+
 
     //Arreglo de Vertices
 };
