@@ -39,18 +39,18 @@ private slots:
     void getRandomPos(int &x, int &y);
 
     void fillCombos();
-    void crearVertice(int pos);
-    void initPainter();
+    void crearVertice(Grafo *grafo, QGraphicsScene* scene, int pos);
+    void initPainter(Grafo *grafo, QGraphicsScene* scene);
     bool readyToCreate();
-    void crearArista(int pos);
+    void crearArista(Grafo *grafo, QGraphicsScene* scene, int pos);
     void updateAristasToNodo(int pos, int destino);
     void eliminarArista(Nodo* origen, Nodo* destino);
 
     //void relajacion( int actual , int adyacente , int peso  );
     void Dijkstra(Nodo* inicio);
     void Floyd();
-    void Prim(Nodo* inicio);
-    void Kruskal();
+    Grafo Prim(Nodo* inicio);
+    Grafo Kruskal();
 
     void on_crearArista_clicked();
 
@@ -80,6 +80,8 @@ private:
     QGraphicsItemGroup* rectangle;
     QGraphicsScene *sceneOriginal, *sceneKruskal, *scenePrim, *sceneDijkstra, *sceneFloyd;
     vector<QGraphicsItemGroup*> vertices;
+    vector<QGraphicsItemGroup*> verticesPrim;
+    vector<QGraphicsItemGroup*> verticesKruskal;
     int sizeEllipse;
 
     //Dijkstra
