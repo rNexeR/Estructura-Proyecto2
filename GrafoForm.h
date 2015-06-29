@@ -33,10 +33,10 @@ private slots:
     void getRandomPos(int &x, int &y);
 
     void fillCombos();
-    void fillPainter(char tipo);
+    void crearVertice(int pos);
     void initPainter();
     bool readyToCreate();
-    void updateAristas(int pos);
+    void crearArista(int pos);
     void updateAristasToNodo(int pos, int destino);
     void eliminarArista(Nodo* origen, Nodo* destino);
 
@@ -58,7 +58,6 @@ private:
     QGraphicsItemGroup* rectangle;
     QGraphicsScene *sceneOriginal, *sceneKruskal, *scenePrim;
     vector<QGraphicsItemGroup*> vertices;
-    vector< map<Nodo*, QGraphicsItemGroup*> > aristas;
     int sizeEllipse;
 
 

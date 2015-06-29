@@ -12,8 +12,18 @@ GrafoForm::GrafoForm(QWidget *parent) :
     scaleMin = .1;
     sceneOriginal = new QGraphicsScene();
     ui->painter->setScene(sceneOriginal);
-    rectangle = new QGraphicsItemGroup();
     sizeEllipse = 100;
+
+//    Nodo* nodo = new Nodo("A");
+//    nodo->pos = QPointF(150,150);
+//    grafo.insertar(nodo);
+
+//    Nodo* nodo2 = new Nodo("B");
+//    nodo2->pos = QPointF(350,350);
+//    grafo.insertar(nodo2);
+
+//    grafo.crearArista(nodo, nodo2, 3);
+
     initPainter();
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(stick()));
@@ -51,36 +61,6 @@ void GrafoForm::stick(){
 }
 
 /*
- *Funcion que actualiza las aristas del nodo en la posicion especificada
-*/
-void GrafoForm::updateAristas(int pos){
-    multimap<Nodo*, int>::iterator i = grafo.vertices[pos]->aristas.begin();
-    for(i; i != grafo.vertices[pos]->aristas.end(); i++){
-        QGraphicsLineItem* linea = new QGraphicsLineItem();
-        QGraphicsTextItem* texto = new QGraphicsTextItem();
-        QGraphicsItemGroup *grupo = new QGraphicsItemGroup();
-
-        //linea->setPos(vertices[pos]->pos());
-        QPointF myPos = vertices[pos]->pos();
-        QPointF otherPos = (*i).first->pos;
-        //linea->setLine(myPos.x(), myPos.y(), otherPos.x(), otherPos.y());
-        linea->setLine(otherPos.x() + sizeEllipse/2, otherPos.y()+ sizeEllipse/2, myPos.x()+ sizeEllipse/2, myPos.y()+ sizeEllipse/2);
-        texto->setPlainText(QString::number((*i).second));
-        int x = (myPos.x() + otherPos.x() + (sizeEllipse))/2;
-        int y = (myPos.y() + otherPos.y() + (sizeEllipse))/2;
-        texto->setPos(x,y);
-
-        grupo->addToGroup(linea);
-        grupo->addToGroup(texto);
-
-        map<Nodo*, QGraphicsItemGroup*> items;
-        items[(*i).first]=grupo;
-        aristas.push_back(items);
-        sceneOriginal->addItem(grupo);
-    }
-}
-
-/*
  *Funcion que actualiza la arista 'destino' en el nodo especificado
 */
 void GrafoForm::updateAristasToNodo(int pos, int destino){
@@ -88,6 +68,7 @@ void GrafoForm::updateAristasToNodo(int pos, int destino){
 }
 
 void GrafoForm::initPainter(){
+    rectangle = new QGraphicsItemGroup();
     QGraphicsRectItem* item1 = new QGraphicsRectItem(0,0,sizeEllipse+20,sizeEllipse+20);
     QGraphicsTextItem* texto = new QGraphicsTextItem();
 
@@ -99,6 +80,15 @@ void GrafoForm::initPainter(){
     rectangle->addToGroup(texto);
 
     sceneOriginal->addItem(rectangle);
+
+    for(int x = 0; x < grafo.vertices.size(); x++){
+        crearVertice(x);
+        vertices[x]->setFlag(QGraphicsItem::ItemIsMovable, false);
+    }
+
+    for(int x = 0; x < vertices.size(); x++){
+        crearArista(x);
+    }
 }
 
 void GrafoForm::on_zoomIn_clicked()
@@ -135,18 +125,21 @@ void GrafoForm::fillCombos(){
     }
 }
 
-void GrafoForm::fillPainter(char tipo){
-    if(tipo == 'N'){
+void GrafoForm::crearVertice(int pos){
         QBrush redBrush(Qt::red);
         QPen blackPen(Qt::black);
         blackPen.setWidth(1);
-        int lastPos = grafo.vertices.size()-1;
+        int lastPos = pos;
         string text = grafo.vertices[lastPos]->valor;
+
+        QPointF posi = grafo.vertices[lastPos]->pos;
 
         QGraphicsEllipseItem *ellipse = new QGraphicsEllipseItem();
         ellipse->setRect(10, 15, sizeEllipse, sizeEllipse);
         ellipse->setBrush(redBrush);
         ellipse->setPen(blackPen);
+        //ellipse->setPos(posi);
+
 
         QGraphicsTextItem *texto = new QGraphicsTextItem();
         texto->setPlainText(QString::fromStdString(text));
@@ -158,13 +151,11 @@ void GrafoForm::fillPainter(char tipo){
         grupo->setAcceptDrops(true);
         grupo->setFlag(QGraphicsItem::ItemIsMovable, true);
         grupo->setZValue(1);
+        grupo->setPos(posi);
 
         vertices.push_back(grupo);
         sceneOriginal->addItem(grupo);
         grafo.vertices[lastPos]->pos = vertices[lastPos]->scenePos();
-    }else{
-
-    }
 }
 
 bool GrafoForm::readyToCreate(){
@@ -177,21 +168,49 @@ bool GrafoForm::readyToCreate(){
 
 void GrafoForm::on_insertar_clicked()//Insertar Vertice
 {
-    msg.setText("Ingrese un valor para el vertice");
+    msg.setText("Creacion de Vertice fallida");
     string valor = ui->txtValor->text().toStdString();
-    if (valor != ""){
+    if (valor != "" & !grafo.buscarNodo(valor)){
         if(!readyToCreate()){
             msg.setText("Un nodo ocupa el lugar de creacion del nuevo nodo, muevalo");
         }else{
             cout<<"Insertando"<<endl;
             Nodo* nuevo = new Nodo(valor);
             grafo.insertar(nuevo);
-            fillPainter('N');
+            crearVertice(grafo.vertices.size()-1);
             fillCombos();
             msg.setText("Vertice creado exitosamente");
         }
     }
     msg.exec();
+}
+
+/*
+ *Funcion que actualiza las aristas del nodo en la posicion especificada
+*/
+void GrafoForm::crearArista(int pos){
+    multimap<Nodo*, int>::iterator i = grafo.vertices[pos]->aristas.begin();
+    for(i; i != grafo.vertices[pos]->aristas.end(); i++){
+        cout<<"Creando Arista"<<endl;
+        QGraphicsLineItem* linea = new QGraphicsLineItem();
+        QGraphicsTextItem* texto = new QGraphicsTextItem();
+        QGraphicsItemGroup *grupo = new QGraphicsItemGroup();
+
+        //linea->setPos(vertices[pos]->pos());
+        QPointF myPos = vertices[pos]->pos();
+        QPointF otherPos = (*i).first->pos;
+        //linea->setLine(myPos.x(), myPos.y(), otherPos.x(), otherPos.y());
+        linea->setLine(otherPos.x() + sizeEllipse/2, otherPos.y()+ sizeEllipse/2, myPos.x()+ sizeEllipse/2, myPos.y()+ sizeEllipse/2);
+        texto->setPlainText(QString::number((*i).second));
+        int x = (myPos.x() + otherPos.x() + (sizeEllipse))/2;
+        int y = (myPos.y() + otherPos.y() + (sizeEllipse))/2;
+        texto->setPos(x,y);
+        cout<<texto->pos().x()<<" , "<<texto->pos().y()<<endl;
+
+        grupo->addToGroup(linea);
+        grupo->addToGroup(texto);
+        sceneOriginal->addItem(grupo);
+    }
 }
 
 void GrafoForm::on_crearArista_clicked()//Crear Arista
@@ -205,7 +224,7 @@ void GrafoForm::on_crearArista_clicked()//Crear Arista
             if(texto != ""){
                 int valor = ui->txtArista->text().toInt();
                 grafo.crearArista(origen, destino, valor);
-                updateAristas(grafo.buscarPos(origen->valor));
+                crearArista(grafo.buscarPos(origen->valor));
 
                 int posOrigen = ui->cmbOrigen->currentIndex();
                 int posDestino = ui->cmbDestino->currentIndex();
@@ -226,46 +245,26 @@ void GrafoForm::on_eliminarVertice_clicked()//Eliminar vertice
     msg.setText("Eliminacion de Vertice Fallida");
     int index =ui->cmbVertice->count();
     if(index>0){
-        Nodo* eliminar = grafo.buscarNodo(ui->cmbVertice->currentText().toStdString());
-        if(eliminar){
+        int eliminar = grafo.buscarPos(ui->cmbVertice->currentText().toStdString());
+        if(eliminar != -1){
             vector<QGraphicsItemGroup*>::iterator i = vertices.begin();
-            vector< map<Nodo*, QGraphicsItemGroup*> >::iterator j = aristas.begin();
-            for(int x = 0; x < index; x++){
+            QList<QGraphicsItem*> items = sceneOriginal->items();
+                for (int i = 0; i < items.size(); i++) {
+                    sceneOriginal->removeItem(items[i]);
+                    delete items[i];
+                }
+            for(int x = 0; x < vertices.size()-1; x++){
+                vertices.erase(i);
                 i++;
-                j++;
             }
-//            (*i)->setVisible(false);
-            //sceneOriginal->removeItem(vertices[index]);
-            cout<<"Paso"<<endl;
-            for(map<Nodo*, QGraphicsItemGroup*>::iterator y = (*j).begin(); y != (*j).end(); y++){
-                sceneOriginal->removeItem((*y).second);
-            }
-
-            //aristas.erase(j);
-            //vertices.erase(i);
-            //grafo.eliminar(eliminar);
+            vertices.clear();
+            grafo.eliminar(grafo.vertices[eliminar]);
+            initPainter();
         }
     }
 }
 
 void GrafoForm::eliminarArista(Nodo* origen, Nodo* destino){
-    int posOrigen = grafo.buscarPos(origen->valor);
-    int posDestino = grafo.buscarPos(destino->valor);
-
-    cout<<origen->valor<<endl;
-    cout<<destino->valor<<endl;
-
-    map<Nodo*, QGraphicsItemGroup*>::iterator i = aristas[posOrigen].begin();
-    while(i != aristas[posOrigen].end()){
-        if((*i).first == destino)
-            break;
-        i++;
-    }
-    aristas[posOrigen].erase(i);
-//    QGraphicsItemGroup* grupo = aristas[posOrigen][destino];
-//    sceneOriginal->destroyItemGroup(grupo);
-//    grupo = aristas[posDestino][origen];
-//    sceneOriginal->destroyItemGroup(aristas[posDestino][origen]);
 }
 
 void GrafoForm::on_eliminarArista_clicked()//Eliminar Arista
@@ -275,7 +274,7 @@ void GrafoForm::on_eliminarArista_clicked()//Eliminar Arista
         Nodo* origen = grafo.buscarNodo(ui->cmbOrigen->currentText().toStdString());
         Nodo* destino = grafo.buscarNodo(ui->cmbDestino->currentText().toStdString());
         if(origen && destino && origen != destino){
-            eliminarArista(origen, destino);
+
         }
     }
 }
