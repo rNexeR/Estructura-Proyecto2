@@ -21,7 +21,8 @@ HEADERS  += Menu.h \
     GrafoForm.h \
     OrdenamientoForm.h \
     Nodo.h \
-    Grafo.h
+    Grafo.h \
+    Cola.h
 
 FORMS    += Menu.ui \
     GrafoForm.ui \

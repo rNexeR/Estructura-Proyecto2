@@ -11,6 +11,10 @@ GrafoForm::GrafoForm(QWidget *parent) :
     scaleFactor = 1.1;
     scaleMin = .1;
     sceneOriginal = new QGraphicsScene();
+    sceneDijkstra = new QGraphicsScene();
+    sceneFloyd = new QGraphicsScene();
+    sceneKruskal = new QGraphicsScene();
+    scenePrim = new QGraphicsScene();
     ui->painter->setScene(sceneOriginal);
     sizeEllipse = 100;
 
@@ -68,7 +72,7 @@ void GrafoForm::updateAristasToNodo(int pos, int destino){
 }
 
 void GrafoForm::initPainter(){
-    QGraphicsItemGroup* rectangle = new QGraphicsItemGroup();
+    rectangle = new QGraphicsItemGroup();
     QGraphicsRectItem* item1 = new QGraphicsRectItem(0,0,sizeEllipse+20,sizeEllipse+20);
     QGraphicsTextItem* texto = new QGraphicsTextItem();
 
@@ -116,11 +120,15 @@ void GrafoForm::fillCombos(){
         ui->cmbDestino->clear();
         ui->cmbOrigen->clear();
         ui->cmbVertice->clear();
+        ui->cmbInicioDijkstra->clear();
+        ui->cmbInicioPrim->clear();
         for(int x = 0; x < grafo.vertices.size(); x++){
             QString val = QString::fromStdString(grafo.vertices[x]->valor);
             ui->cmbDestino->addItem(val);
             ui->cmbOrigen->addItem(val);
             ui->cmbVertice->addItem(val);
+            ui->cmbInicioDijkstra->addItem(val);
+            ui->cmbInicioPrim->addItem(val);
         }
     }
 }
@@ -159,10 +167,10 @@ void GrafoForm::crearVertice(int pos){
 }
 
 bool GrafoForm::readyToCreate(){
-//    for(int x = 0; x < vertices.size(); x++){
-//        if(rectangle->collidesWithItem(vertices[x]))
-//            return false;
-//    }
+    for(int x = 0; x < vertices.size(); x++){
+        if(rectangle->collidesWithItem(vertices[x]))
+            return false;
+    }
     return true;
 }
 
@@ -278,4 +286,117 @@ void GrafoForm::on_eliminarArista_clicked()//Eliminar Arista
 
         }
     }
+}
+
+void GrafoForm::on_crearArista_6_clicked()//Ver Grafo Original
+{
+    ui->painter->setScene(sceneOriginal);
+}
+
+void GrafoForm::on_crearArista_2_clicked()//Dijkstra
+{
+    ui->painter->setScene(sceneDijkstra);
+    if(ui->cmbInicioDijkstra->count()>1){
+        Nodo* origen = grafo.buscarNodo(ui->cmbInicioDijkstra->currentText().toStdString());
+        if(origen){
+            Dijkstra(origen);
+        }
+    }
+}
+
+void GrafoForm::on_crearArista_3_clicked()//Floyd
+{
+    ui->painter->setScene(sceneFloyd);
+    Floyd();
+}
+
+void GrafoForm::on_crearArista_5_clicked()//Prim
+{
+    ui->painter->setScene(scenePrim);
+}
+
+void GrafoForm::on_crearArista_4_clicked()//Kruskal
+{
+    ui->painter->setScene(sceneKruskal);
+
+}
+
+void GrafoForm::Dijkstra(Nodo* inicio){
+    //vector<Nodo*> vertices = grafo.vertices;
+    cout<<"Haciendo Dijkstra"<<endl;
+
+    int arreglo[4][grafo.vertices.size()];
+    //llenando el arreglo
+    for(int x = 0; x < grafo.vertices.size(); x++){
+        arreglo[POSICION][x] = x;
+        arreglo[DISTANCIA][x] = INT_MAX;
+        arreglo[VISITADO][x] = 0;
+        arreglo[PATH][x] = -1;
+    }
+
+    Cola cola;
+
+    cola.insert(inicio, 0);
+    arreglo[DISTANCIA][grafo.buscarPos(inicio->valor)] = 0;
+
+    int actual , adyacente , peso;
+    while(!cola.empty()){
+        Arista* aristaActual = cola.pop();
+        int actual = grafo.buscarPos(aristaActual->arista.first->valor);
+        cout<<"Actual: "<<actual<<endl;
+        int distancia = aristaActual->arista.second;
+        if( arreglo[VISITADO][ actual ] ){
+            continue; //Si el vértice actual ya fue visitado entonces sigo sacando elementos de la cola
+        }
+        arreglo[VISITADO][ actual ] = true;
+
+        //multimap<Nodo* , int > aristas = grafo.vertices[actual]->aristas;
+
+        Nodo *este;
+        este = grafo.vertices[actual];
+        for(multimap< Nodo* , int >::iterator x = este->aristas.begin(); x != este->aristas.end(); x++){
+            adyacente = grafo.buscarPos((*x).first->valor);   //id del vertice adyacente
+            peso = (*x).second;        //peso de la arista que une actual con adyacente ( actual , adyacente )
+            if( !arreglo[VISITADO][ adyacente ] ){        //si el vertice adyacente no fue visitado
+                //relajacion
+                if( arreglo[DISTANCIA][ actual ] + peso < arreglo[DISTANCIA][ adyacente ] ){
+                    arreglo[DISTANCIA][ adyacente ] = arreglo[DISTANCIA][ actual ] + peso;  //relajamos el vertice actualizando la distancia
+                    arreglo[PATH][ adyacente ] = actual;                         //a su vez actualizamos el vertice previo
+                    cola.insert( grafo.vertices[adyacente], peso ); //agregamos adyacente a la cola de prioridad
+                }
+            }
+        }
+    }
+
+    for(int y = 0; y < 4; y++){
+        for(int z = 0; z < grafo.vertices.size(); z++){
+            cout<<arreglo[y][z]<<" ";
+        }
+        cout<<endl;
+    }
+}
+
+void GrafoForm::Floyd(){
+    int distancias[grafo.vertices.size()][grafo.vertices.size()];
+    int recorrido[grafo.vertices.size()][grafo.vertices.size()];
+
+    for(int y = 0; y < grafo.vertices.size(); y++){
+        for(int z = 0; z < grafo.vertices.size(); z++){
+            if(y == z)
+                distancias[y][z] = 0;
+            else
+                distancias[y][z] = INT_MAX;
+            recorrido[y][z] = z;
+            cout<<distancias[y][z]<<" ";
+        }
+        cout<<endl;
+    }
+}
+
+void GrafoForm::Prim(Nodo *inicio){
+
+}
+
+void GrafoForm::Kruskal(){
+
 }
