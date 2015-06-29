@@ -8,7 +8,6 @@
 #include <QGraphicsLineItem>
 #include <vector>
 #include <map>
-#include "Cola.h"
 using namespace std;
 
 class Nodo{
