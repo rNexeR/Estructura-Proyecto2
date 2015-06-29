@@ -16,9 +16,12 @@ public:
     string valor;
     multimap<Nodo*, int> aristas;
     QPointF pos;
+    bool prim, kruskal;
 
     Nodo(string val){
         this->valor = val;
+        prim = false;
+        kruskal = false;
     }
 
     multimap<Nodo*, int>::iterator* buscarArista(Nodo* arista){

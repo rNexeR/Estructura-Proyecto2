@@ -424,7 +424,7 @@ void GrafoForm::Floyd(){
         for(multimap< Nodo* , int >::iterator y = actual->aristas.begin(); y != actual->aristas.end(); y++){
             int pos = grafo.buscarPos((*y).first->valor);
             distancias[x][pos] = (*y).second;
-            //recorridos[x][pos] = x;
+            recorrido[x][pos] = x;
         }
     }
 
