@@ -7,6 +7,11 @@
 #include <QGraphicsObject>
 #include <QTimer>
 #include "Cola.h"
+#include "ColaDoble.h"
+
+enum Posicion{
+    POSICION, DISTANCIA, VISITADO, PATH
+};
 
 namespace Ui {
 class GrafoForm;

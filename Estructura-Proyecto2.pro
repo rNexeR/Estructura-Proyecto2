@@ -23,7 +23,9 @@ HEADERS  += Menu.h \
     Nodo.h \
     Grafo.h \
     Cola.h \
-    Arista.h
+    Arista.h \
+    AristaDoble.h \
+    ColaDoble.h
 
 FORMS    += Menu.ui \
     GrafoForm.ui \

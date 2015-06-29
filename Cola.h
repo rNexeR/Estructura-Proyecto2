@@ -4,10 +4,6 @@
 #include "Grafo.h"
 #include "Arista.h"
 
-enum Posicion{
-    POSICION, DISTANCIA, VISITADO, PATH
-};
-
 class Cola{
 public:
     Arista* inicio;
