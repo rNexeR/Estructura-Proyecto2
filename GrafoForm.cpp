@@ -368,9 +368,37 @@ void GrafoForm::Dijkstra(Nodo* inicio){
         }
     }
 
+    QGraphicsTextItem* texto = new QGraphicsTextItem();
+    texto->setPlainText("DIJKSTRA");
+    texto->setPos(100, -50);
+    sceneDijkstra->addItem(texto);
     for(int y = 0; y < 4; y++){
+        QGraphicsTextItem* texto = new QGraphicsTextItem();
+        QString text = "";
+        if(y == 0)
+            text = "Nodo";
+        else if(y ==1)
+            text = "Distancia";
+        else if(y == 2)
+            text = "Visitado";
+        else
+            text = "Path";
+        texto->setPlainText(text);
+        texto->setPos(0,y*50);
+        sceneDijkstra->addItem(texto);
         for(int z = 0; z < grafo.vertices.size(); z++){
             cout<<arreglo[y][z]<<" ";
+
+            QString nodo = "";
+            if (y == 0)
+                nodo = QString::fromStdString(grafo.vertices[arreglo[y][z]]->valor);
+            else
+                nodo = QString::number(arreglo[y][z]);
+
+            QGraphicsTextItem* texto = new QGraphicsTextItem();
+            texto->setPlainText(nodo);
+            texto->setPos(((z+1)*100),y*50 );
+            sceneDijkstra->addItem(texto);
         }
         cout<<endl;
     }
@@ -380,6 +408,7 @@ void GrafoForm::Floyd(){
     int distancias[grafo.vertices.size()][grafo.vertices.size()];
     int recorrido[grafo.vertices.size()][grafo.vertices.size()];
 
+    //inicializar el arreglo con 0 e infinitos
     for(int y = 0; y < grafo.vertices.size(); y++){
         for(int z = 0; z < grafo.vertices.size(); z++){
             if(y == z)
@@ -387,7 +416,42 @@ void GrafoForm::Floyd(){
             else
                 distancias[y][z] = INT_MAX;
             recorrido[y][z] = z;
-            cout<<distancias[y][z]<<" ";
+        }
+    }
+
+    for(int x = 0; x < grafo.vertices.size(); x++){
+        Nodo* actual = grafo.vertices[x];
+        for(multimap< Nodo* , int >::iterator y = actual->aristas.begin(); y != actual->aristas.end(); y++){
+            int pos = grafo.buscarPos((*y).first->valor);
+            distancias[x][pos] = (*y).second;
+            //recorridos[x][pos] = x;
+        }
+    }
+
+    for(int i = 0; i < grafo.vertices.size(); i++){
+        for(int j = 0; j < grafo.vertices.size(); j++){
+            for(int k = 0; k < grafo.vertices.size(); k++){
+                int suma = distancias[j][i] + distancias[i][k];
+                if(distancias[j][k] > suma){
+                    distancias[j][k] = suma;
+                    recorrido[j][k] = i;
+                }
+            }
+        }
+    }
+
+    cout<<endl<<"Distancias"<<endl;
+    for(int i = 0; i < grafo.vertices.size(); i++){
+        for(int j = 0; j < grafo.vertices.size(); j++){
+            cout<<distancias[i][j]<<" ";
+        }
+        cout<<endl;
+    }
+
+    cout<<endl<<"Recorridos"<<endl;
+    for(int i = 0; i < grafo.vertices.size(); i++){
+        for(int j = 0; j < grafo.vertices.size(); j++){
+            cout<<recorrido[i][j]<<" ";
         }
         cout<<endl;
     }
