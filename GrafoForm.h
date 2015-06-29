@@ -55,7 +55,6 @@ private:
 
     //GraphicView
     double currentScale, scaleMin, scaleFactor;
-    QGraphicsItemGroup* rectangle;
     QGraphicsScene *sceneOriginal, *sceneKruskal, *scenePrim;
     vector<QGraphicsItemGroup*> vertices;
     int sizeEllipse;

@@ -5,10 +5,15 @@
 class Grafo{
 public:
     vector<Nodo*> vertices;
-    void insertar(Nodo* nuevo)
+    bool insertar(Nodo* nuevo)
     {
-        if(buscarPos(nuevo->valor) == -1)
+        cout<<"\t Trying to insert"<<endl;
+        if(buscarPos(nuevo->valor) == -1){
             vertices.push_back(nuevo);
+            cout<<"\t Vertice Creado en Grafo"<<endl;
+            return true;
+        }
+        return false;
     }
 
     void crearArista(Nodo* origen, Nodo* destino, int arista)

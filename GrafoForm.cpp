@@ -49,11 +49,11 @@ Revisa si hay cambios en las posiciones de los vertices,
 si las hay, actualiza las aristas
 */
 void GrafoForm::stick(){
-    vector<int> cambios;
+    //vector<int> cambios;
     for(int x = 0; x < vertices.size(); x++){
         if(vertices[x]->pos() != grafo.vertices[x]->pos){
             cout<<"Cambio de posicion, nodo en la posicion: "<<x<<endl;
-            cambios.push_back(x);
+            //cambios.push_back(x);
             grafo.vertices[x]->pos = vertices[x]->pos();
         }
     }
@@ -68,7 +68,7 @@ void GrafoForm::updateAristasToNodo(int pos, int destino){
 }
 
 void GrafoForm::initPainter(){
-    rectangle = new QGraphicsItemGroup();
+    QGraphicsItemGroup* rectangle = new QGraphicsItemGroup();
     QGraphicsRectItem* item1 = new QGraphicsRectItem(0,0,sizeEllipse+20,sizeEllipse+20);
     QGraphicsTextItem* texto = new QGraphicsTextItem();
 
@@ -159,10 +159,10 @@ void GrafoForm::crearVertice(int pos){
 }
 
 bool GrafoForm::readyToCreate(){
-    for(int x = 0; x < vertices.size(); x++){
-        if(rectangle->collidesWithItem(vertices[x]))
-            return false;
-    }
+//    for(int x = 0; x < vertices.size(); x++){
+//        if(rectangle->collidesWithItem(vertices[x]))
+//            return false;
+//    }
     return true;
 }
 
@@ -176,10 +176,11 @@ void GrafoForm::on_insertar_clicked()//Insertar Vertice
         }else{
             cout<<"Insertando"<<endl;
             Nodo* nuevo = new Nodo(valor);
-            grafo.insertar(nuevo);
+            if(grafo.insertar(nuevo)){
             crearVertice(grafo.vertices.size()-1);
             fillCombos();
             msg.setText("Vertice creado exitosamente");
+            }
         }
     }
     msg.exec();
