@@ -92,6 +92,14 @@ public:
         for(int x = 0; x < vertices.size(); x++)
             vertices[x]->kruskal = false;
     }
+
+    int cantAristas(){
+        int cant = 0;
+        for(int x = 0; x < vertices.size(); x++){
+            cant+=vertices[x]->aristas.size();
+        }
+        return cant;
+    }
 };
 
 #endif // GRAFO
