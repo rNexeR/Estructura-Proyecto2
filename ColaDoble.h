@@ -8,6 +8,7 @@ class ColaDoble{
 public:
     AristaDoble* inicio;
     AristaDoble* final;
+    int size = 0;
     ColaDoble(){
         inicio = NULL;
         final = NULL;
@@ -18,6 +19,7 @@ public:
     }
 
     void insert(Nodo* origen, Nodo* destino, int costo){
+        size++;
         if(!inicio){
             inicio = new AristaDoble();
             inicio->origen = origen;

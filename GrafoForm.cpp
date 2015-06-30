@@ -83,11 +83,13 @@ void GrafoForm::initPainter(Grafo *grafo, QGraphicsScene *scene){
     rectangle->addToGroup(item1);
     rectangle->addToGroup(texto);
 
-    scene->addItem(rectangle);
+    if(scene == sceneOriginal)
+        scene->addItem(rectangle);
 
     for(int x = 0; x < (*grafo).vertices.size(); x++){
         crearVertice(grafo, scene, x);
-        vertices[x]->setFlag(QGraphicsItem::ItemIsMovable, false);
+        if(scene == sceneOriginal)
+            vertices[x]->setFlag(QGraphicsItem::ItemIsMovable, false);
     }
 
     for(int x = 0; x < vertices.size(); x++){
@@ -165,12 +167,13 @@ void GrafoForm::crearVertice(Grafo *grafo, QGraphicsScene* scene, int pos){
         grupo->addToGroup(ellipse);
         grupo->addToGroup(texto);
         grupo->setAcceptDrops(true);
-        grupo->setFlag(QGraphicsItem::ItemIsMovable, true);
+        if(scene == sceneOriginal)
+            grupo->setFlag(QGraphicsItem::ItemIsMovable, true);
         grupo->setZValue(1);
         grupo->setPos(posi);
 
         vertices->push_back(grupo);
-        sceneOriginal->addItem(grupo);
+        scene->addItem(grupo);
         (*grafo).vertices[lastPos]->pos = (*vertices)[lastPos]->scenePos();
 }
 
@@ -210,13 +213,13 @@ void GrafoForm::crearArista(Grafo *grafo, QGraphicsScene* scene, int pos){
 
     if(scene == sceneKruskal)
         vertices = &verticesKruskal;
-    else if(scene == scenePrim)
+    else if(scene == scenePrim){
         vertices = &verticesPrim;
+    }
 
 
     multimap<Nodo*, int>::iterator i = (*grafo).vertices[pos]->aristas.begin();
     for(i; i != (*grafo).vertices[pos]->aristas.end(); i++){
-        cout<<"Creando Arista"<<endl;
         QGraphicsLineItem* linea = new QGraphicsLineItem();
         QGraphicsTextItem* texto = new QGraphicsTextItem();
         QGraphicsItemGroup *grupo = new QGraphicsItemGroup();
@@ -230,7 +233,6 @@ void GrafoForm::crearArista(Grafo *grafo, QGraphicsScene* scene, int pos){
         int x = (myPos.x() + otherPos.x() + (sizeEllipse))/2;
         int y = (myPos.y() + otherPos.y() + (sizeEllipse))/2;
         texto->setPos(x,y);
-        cout<<texto->pos().x()<<" , "<<texto->pos().y()<<endl;
 
         grupo->addToGroup(linea);
         grupo->addToGroup(texto);
@@ -333,6 +335,7 @@ void GrafoForm::on_crearArista_5_clicked()//Prim
         Nodo* origen = grafo.buscarNodo(ui->cmbInicioPrim->currentText().toStdString());
         if(origen){
             Grafo prim = Prim(origen);
+            initPainter(&prim, scenePrim);
         }
     }
     //Grafo prim = Prim();
@@ -341,7 +344,8 @@ void GrafoForm::on_crearArista_5_clicked()//Prim
 void GrafoForm::on_crearArista_4_clicked()//Kruskal
 {
     ui->painter->setScene(sceneKruskal);
-
+    Grafo kruskal = Kruskal();
+    initPainter(&kruskal, sceneKruskal);
 }
 
 void GrafoForm::Dijkstra(Nodo* inicio){
@@ -464,26 +468,160 @@ void GrafoForm::Floyd(){
     }
 
     cout<<endl<<"Distancias"<<endl;
+    QGraphicsTextItem* texto = new QGraphicsTextItem();
+    texto->setPlainText("FLOYD");
+    texto->setPos(100, -100);
+    sceneFloyd->addItem(texto);
+
+    texto = new QGraphicsTextItem();
+    texto->setPlainText("Distancias");
+    texto->setPos(100, -50);
+    sceneFloyd->addItem(texto);
+
     for(int i = 0; i < grafo.vertices.size(); i++){
         for(int j = 0; j < grafo.vertices.size(); j++){
             cout<<distancias[i][j]<<" ";
+            QGraphicsTextItem* texto = new QGraphicsTextItem();
+            texto->setPlainText(QString::number(distancias[i][j]));
+            texto->setPos(j*100, i*50);
+            sceneFloyd->addItem(texto);
         }
         cout<<endl;
     }
 
     cout<<endl<<"Recorridos"<<endl;
+    texto = new QGraphicsTextItem();
+    texto->setPlainText("Recorridos");
+    int x_min = grafo.vertices.size() * 100;
+    x_min+=50;
+    texto->setPos(x_min + 100, -50);
+    sceneFloyd->addItem(texto);
     for(int i = 0; i < grafo.vertices.size(); i++){
         for(int j = 0; j < grafo.vertices.size(); j++){
             cout<<recorrido[i][j]<<" ";
+            QGraphicsTextItem* texto = new QGraphicsTextItem();
+            texto->setPlainText(QString::number(recorrido[i][j]));
+            texto->setPos(x_min + (j*100), i*50);
+            sceneFloyd->addItem(texto);
         }
         cout<<endl;
     }
 }
 
 Grafo GrafoForm::Prim(Nodo *inicio){
+    grafo.resetPrim();
+    Grafo prim;
+    Nodo* nodo = new Nodo(inicio->valor);
+    nodo->pos = inicio->pos;
+    prim.insertar(nodo);
+    grafo.vertices[0]->prim = true;
 
+    ColaDoble cola;
+    for(multimap< Nodo* , int >::iterator y = inicio->aristas.begin(); y != inicio->aristas.end(); y++){
+        cola.insert(inicio, (*y).first, (*y).second);
+    }
+
+    cout<<"Entro al While"<<endl;
+
+    while(prim.vertices.size() < grafo.vertices.size()){
+        AristaDoble* actual = cola.pop();
+        if(!actual->destino->prim){
+
+            cout<<actual->origen->valor<<" , "<<actual->destino->valor<< " : "<<actual->costo<<endl;
+
+            Nodo* nuevo = new Nodo(actual->destino->valor);
+            nuevo->pos = actual->destino->pos;
+            prim.insertar(nuevo);
+
+            prim.crearArista(prim.buscarNodo(actual->origen->valor), nuevo, actual->costo);
+            Nodo* este = actual->destino;
+            for(multimap< Nodo* , int >::iterator y = este->aristas.begin(); y != este->aristas.end(); y++){
+//                if(!(*y).first->prim){
+                    cout<<"\t Agregando a la Cola: "<<(*y).first->valor<<endl;
+                    cola.insert(este, (*y).first, (*y).second);
+//                }
+            }
+            actual->destino->prim = true;
+        }
+    }
+
+    return prim;
+}
+
+int idDistinto(int arreglo[][4], int size){
+    for(int x = 0; x < size; x++){
+        if(arreglo[x][3] != 0)
+            return x;
+    }
+    return -1;
+}
+
+bool seCreaCiclo(int arreglo[][4], int size, int n1, int n2){
+    bool sn1 =false, sn2 = false;
+    for(int x = 0; x < size; x++){
+        if(arreglo[x][3] != 0)
+            continue;
+        if(arreglo[x][0] == n1)
+            sn1 = true;
+        if(arreglo[x][0] == n2)
+            sn2 = true;
+        if(sn1 && sn2)
+            return true;
+//        if(arreglo[x][0] == n1 && arreglo[x][1] == n2 || arreglo[x][0] == n2 && arreglo[x][1] == n1)
+//            return true;
+    }
+    return false;
 }
 
 Grafo GrafoForm::Kruskal(){
+    grafo.resetKruskal();
+    Grafo krustal;
+    int cantAristas = grafo.cantAristas();
+    int arreglo[cantAristas][4];
 
+    ColaDoble cola;
+    //llenando la cola
+    for(int x = 0; x < grafo.vertices.size(); x++){
+        Nodo* actual = grafo.vertices[x];
+        Nodo* nuevo = new Nodo(actual->valor);
+        nuevo->pos = actual->pos;
+        for(multimap< Nodo* , int >::iterator y = actual->aristas.begin(); y != actual->aristas.end(); y++){
+            Nodo* actual2 = (*y).first;
+            Nodo* nuevo2 = new Nodo(actual2->valor);
+            nuevo2->pos = actual2->pos;
+            //cout<<"cola"<<endl;
+            cola.insert(nuevo, nuevo2, (*y).second);
+        }
+    }
+
+    cout<<"Size de la cola"<<cola.size<<endl;
+    //pasando los valores de la cola al arreglo y agregar el vertice al grafo
+    for(int x = 0; x < cantAristas; x++){
+        AristaDoble* tope = cola.pop();
+        //Insertandolo en el Grafo
+        Nodo* origen = tope->origen;
+        Nodo* destino = tope->destino;
+        if(!krustal.buscarNodo(origen->valor))
+            krustal.insertar(origen);
+        if(!krustal.buscarNodo(destino->valor))
+            krustal.insertar(destino);
+
+        arreglo[x][0] = krustal.buscarPos(tope->origen->valor);
+        arreglo[x][1] = krustal.buscarPos(tope->destino->valor);
+        arreglo[x][2] = tope->costo;
+        arreglo[x][3] = x+1;
+    }
+
+    //conectando los Nodos con aristas
+    int pos = idDistinto(arreglo, cantAristas);
+    while(pos != -1){
+        if(!seCreaCiclo(arreglo, cantAristas, arreglo[pos][0], arreglo[pos][1])){
+            Nodo* origen = krustal.vertices[arreglo[pos][0]];
+            Nodo* destino = krustal.vertices[arreglo[pos][1]];
+            krustal.crearArista(origen, destino, arreglo[pos][2]);
+        }
+        arreglo[pos][3] = 0;
+        pos = idDistinto(arreglo, cantAristas);
+    }
+    return krustal;
 }
