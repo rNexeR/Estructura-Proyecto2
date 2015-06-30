@@ -6,6 +6,12 @@
 #include <QMessageBox>
 #include <QGraphicsObject>
 #include <QTimer>
+#include "Cola.h"
+#include "ColaDoble.h"
+
+enum Posicion{
+    POSICION, DISTANCIA, VISITADO, PATH
+};
 
 namespace Ui {
 class GrafoForm;
@@ -33,18 +39,34 @@ private slots:
     void getRandomPos(int &x, int &y);
 
     void fillCombos();
-    void fillPainter(char tipo);
-    void initPainter();
+    void crearVertice(Grafo *grafo, QGraphicsScene* scene, int pos);
+    void initPainter(Grafo *grafo, QGraphicsScene* scene);
     bool readyToCreate();
-    void updateAristas(int pos);
+    void crearArista(Grafo *grafo, QGraphicsScene* scene, int pos);
     void updateAristasToNodo(int pos, int destino);
     void eliminarArista(Nodo* origen, Nodo* destino);
+
+    //void relajacion( int actual , int adyacente , int peso  );
+    void Dijkstra(Nodo* inicio);
+    void Floyd();
+    Grafo Prim(Nodo* inicio);
+    Grafo Kruskal();
 
     void on_crearArista_clicked();
 
     void on_eliminarVertice_clicked();
 
     void on_eliminarArista_clicked();
+
+    void on_crearArista_6_clicked();
+
+    void on_crearArista_2_clicked();
+
+    void on_crearArista_3_clicked();
+
+    void on_crearArista_5_clicked();
+
+    void on_crearArista_4_clicked();
 
 private:
     Ui::GrafoForm *ui;
@@ -56,10 +78,15 @@ private:
     //GraphicView
     double currentScale, scaleMin, scaleFactor;
     QGraphicsItemGroup* rectangle;
-    QGraphicsScene *sceneOriginal, *sceneKruskal, *scenePrim;
+    QGraphicsScene *sceneOriginal, *sceneKruskal, *scenePrim, *sceneDijkstra, *sceneFloyd;
     vector<QGraphicsItemGroup*> vertices;
-    vector< map<Nodo*, QGraphicsItemGroup*> > aristas;
+    vector<QGraphicsItemGroup*> verticesPrim;
+    vector<QGraphicsItemGroup*> verticesKruskal;
     int sizeEllipse;
+
+    //Dijkstra
+    //int Dijks[][];
+    //Cola colaDijkstra;
 
 
     //Arreglo de Vertices

@@ -150,7 +150,7 @@
    <property name="geometry">
     <rect>
      <x>980</x>
-     <y>120</y>
+     <y>140</y>
      <width>96</width>
      <height>31</height>
     </rect>
@@ -160,10 +160,13 @@
    </property>
   </widget>
   <widget class="QPushButton" name="eliminarArista">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>980</x>
-     <y>160</y>
+     <y>200</y>
      <width>96</width>
      <height>31</height>
     </rect>
@@ -196,6 +199,9 @@
    </property>
   </widget>
   <widget class="QPushButton" name="eliminarVertice">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>980</x>
@@ -233,7 +239,7 @@
      <x>750</x>
      <y>10</y>
      <width>20</width>
-     <height>301</height>
+     <height>521</height>
     </rect>
    </property>
    <property name="orientation">
@@ -257,7 +263,7 @@
    <property name="geometry">
     <rect>
      <x>770</x>
-     <y>240</y>
+     <y>230</y>
      <width>301</width>
      <height>16</height>
     </rect>
@@ -313,6 +319,155 @@
    </property>
    <property name="text">
     <string>Valor</string>
+   </property>
+  </widget>
+  <widget class="Line" name="line_4">
+   <property name="geometry">
+    <rect>
+     <x>770</x>
+     <y>310</y>
+     <width>301</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_9">
+   <property name="geometry">
+    <rect>
+     <x>770</x>
+     <y>330</y>
+     <width>141</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Camino mas Corto</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="crearArista_2">
+   <property name="geometry">
+    <rect>
+     <x>880</x>
+     <y>360</y>
+     <width>96</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Dijkstra</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="crearArista_3">
+   <property name="geometry">
+    <rect>
+     <x>990</x>
+     <y>360</y>
+     <width>96</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Floyd</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_10">
+   <property name="geometry">
+    <rect>
+     <x>770</x>
+     <y>410</y>
+     <width>141</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Costo Minimo</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="crearArista_4">
+   <property name="geometry">
+    <rect>
+     <x>990</x>
+     <y>440</y>
+     <width>96</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Kruskal</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="crearArista_5">
+   <property name="geometry">
+    <rect>
+     <x>880</x>
+     <y>440</y>
+     <width>96</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Prim</string>
+   </property>
+  </widget>
+  <widget class="Line" name="line_5">
+   <property name="geometry">
+    <rect>
+     <x>770</x>
+     <y>390</y>
+     <width>301</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="cmbInicioDijkstra">
+   <property name="geometry">
+    <rect>
+     <x>770</x>
+     <y>360</y>
+     <width>101</width>
+     <height>29</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="cmbInicioPrim">
+   <property name="geometry">
+    <rect>
+     <x>770</x>
+     <y>440</y>
+     <width>101</width>
+     <height>29</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="crearArista_6">
+   <property name="geometry">
+    <rect>
+     <x>770</x>
+     <y>490</y>
+     <width>311</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Ver Grafo Original</string>
    </property>
   </widget>
  </widget>

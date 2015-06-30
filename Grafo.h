@@ -1,14 +1,20 @@
 #ifndef GRAFO
 #define GRAFO
 #include "Nodo.h"
+#include <map>
 
 class Grafo{
 public:
     vector<Nodo*> vertices;
-    void insertar(Nodo* nuevo)
+    bool insertar(Nodo* nuevo)
     {
-        if(buscarPos(nuevo->valor) == -1)
+        cout<<"\t Trying to insert"<<endl;
+        if(buscarPos(nuevo->valor) == -1){
             vertices.push_back(nuevo);
+            cout<<"\t Vertice Creado en Grafo"<<endl;
+            return true;
+        }
+        return false;
     }
 
     void crearArista(Nodo* origen, Nodo* destino, int arista)
@@ -77,6 +83,23 @@ public:
         }
     }
 
+    void resetPrim(){
+        for(int x = 0; x < vertices.size(); x++)
+            vertices[x]->prim = false;
+    }
+
+    void resetKruskal(){
+        for(int x = 0; x < vertices.size(); x++)
+            vertices[x]->kruskal = false;
+    }
+
+    int cantAristas(){
+        int cant = 0;
+        for(int x = 0; x < vertices.size(); x++){
+            cant+=vertices[x]->aristas.size();
+        }
+        return cant;
+    }
 };
 
 #endif // GRAFO
